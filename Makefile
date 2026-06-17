@@ -1,23 +1,27 @@
 TARGETS=tx_pulsar hackrf_daq hackrf_daq_fb single_tone
 all: $(TARGETS)
 
-LIBS=-luhd -lboost_program_options -lboost_system -pthread -ldl -lcufftw -g
+BASIC_LIBS=-luhd -lboost_program_options -pthread -ldl -g -fopenmp
+CUDA_FFT_LIBS=-lcufftw
+CPU_FFT_LIBS=-lfftw3f -lfftw3
+HACKRF_LIBS=-lhackrf
+LIBS=$(CUDA_FFT_LIBS) $(BASIC_LIBS)
 
 pulsar.o: pulsar.cpp pulsar.hpp
-	g++ -c -o $@ $< -O3 -fopenmp
+	g++ -c -o $@ $< -O3
 
 
 tx_pulsar: tx_pulsar.cpp pulsar.o
-	g++ $< -o $@ -O3 pulsar.o $(LIBS) -fopenmp
+	g++ $< -o $@ -O3 pulsar.o $(LIBS)
 
 single_tone: single_tone.cpp pulsar.o
-	g++ $< -o $@ -O3 pulsar.o $(LIBS) -fopenmp
+	g++ $< -o $@ -O3 pulsar.o $(LIBS)
 
 hackrf_daq: hackrf_daq.cpp
-	g++ $< -o $@ -O3 -lhackrf $(LIBS) -fopenmp
+	g++ $< -o $@ -O3 $(HACKRF_LIBS) $(LIBS)
 
 hackrf_daq_fb: hackrf_daq_fb.cpp fft_channelizer.hpp
-	g++ $< -o $@ -O3 -lhackrf -lfftw3f -lfftw3 -lboost_program_options -lboost_system -pthread -fopenmp -g
+	g++ $< -o $@ -O3 $(HACKRF_LIBS) $(CPU_FFT_LIBS) $(BASIC_LIBS)
 
 clean:
 	rm -rf lib $(TARGETS) *.o
