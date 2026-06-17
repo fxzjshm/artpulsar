@@ -139,20 +139,20 @@ int UHD_SAFE_MAIN(int argc, char* argv[])
     desc.add_options()
         ("help", "help message")
         ("cohmod", "only generate signal one time for coherent dedispersion")
-        ("args", po::value<std::string>(&args)->default_value(""), "multi uhd device address args")
-        ("dm", po::value<double>(&dm)->default_value(0.0), "dm value")
+        ("args", po::value<std::string>(&args)->default_value(""), "(Optional) multi uhd device address args")
+        ("dm", po::value<double>(&dm)->default_value(0.0), "pulsar dispersion measurement value")
         ("pms", po::value<double>(&period_ms), "period in ms")
         ("pn", po::value<size_t>(&period_n), "period in n sample points")
-        ("sigma", po::value<double>(&sigma)->default_value(0.05), "sigma<0.5")
+        ("sigma", po::value<double>(&sigma)->default_value(0.05), "Generated pulse profile is Gaussian-shaped, this value is sigma value of the Gaussion-shaped profile in the unit of a period. Larger sigma value gives larger duty cycle. sigma<0.5")
         ("npp", po::value<size_t>(&nperiod_per_shoot)->default_value(10), "nperiod per shoot")
-        ("nch", po::value<size_t>(&nch)->default_value(32768), "num of ch")
-        ("rate", po::value<double>(&rate), "rate of outgoing samples")
+        ("nch", po::value<size_t>(&nch)->default_value(32768), "number of channels")
+        ("rate", po::value<double>(&rate), "rate of outgoing samples in s^-1")
         ("freq", po::value<double>(&freq), "RF center frequency in Hz")
         ("lo-offset", po::value<double>(&lo_offset)->default_value(0.0),
             "Offset for frontend LO in Hz (optional)")
-        ("gain", po::value<double>(&gain), "gain for the RF chain")
-        ("ant", po::value<std::string>(&ant), "antenna selection")
-        ("subdev", po::value<std::string>(&subdev), "subdevice specification")
+        ("gain", po::value<double>(&gain), "gain for the RF chain, reference value: 70 -- 80. CHECK OUTPUT POWER WITH SPECTRUM ANALYZER.")
+        ("ant", po::value<std::string>(&ant), "(To USRP) antenna selection")
+        ("subdev", po::value<std::string>(&subdev), "(To USRP) subdevice specification")
         ("bw", po::value<double>(&bw), "analog frontend filter bandwidth in Hz")
         ("ref", po::value<std::string>(&ref)->default_value("internal"), "reference source (internal, external, mimo)")
         //("wirefmt", po::value<std::string>(&wirefmt)->default_value("sc16"), "wire format (sc8 or sc16)")
@@ -166,7 +166,7 @@ int UHD_SAFE_MAIN(int argc, char* argv[])
 
     // print the help message
     if (vm.count("help")) {
-        std::cout << boost::format("transmitting pulsar signal %s") % desc << std::endl;
+        std::cout << boost::format("transmitting pulsar signal\n%s") % desc << std::endl;
         return ~0;
     }
 
